@@ -1,0 +1,154 @@
+<html>
+<head>
+<title>StartRideFragment.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #808080;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #cc7832;}
+.s3 { color: #629755; font-style: italic;}
+.s4 { color: #6a8759;}
+.s5 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+StartRideFragment.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">/* 
+*MIT License 
+* 
+*Copyright (c) [2023] [Felix Jeppe Fatum] 
+* 
+*Permission is hereby granted, free of charge, to any person obtaining a copy 
+*of this software and associated documentation files (the &quot;Software&quot;), to deal 
+*in the Software without restriction, including without limitation the rights 
+*to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+*copies of the Software, and to permit persons to whom the Software is 
+*furnished to do so, subject to the following conditions: 
+* 
+*The above copyright notice and this permission notice shall be included in all 
+*copies or substantial portions of the Software. 
+* 
+*THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+*IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+*FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+*AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+*LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+*SOFTWARE. 
+*/</span>
+
+<span class="s2">package </span><span class="s1">dk.itu.moapd.scootersharing.fefa</span>
+
+<span class="s1">import android.os.Bundle</span>
+<span class="s1">import android.view.LayoutInflater</span>
+<span class="s1">import android.view.View</span>
+<span class="s1">import android.view.ViewGroup</span>
+<span class="s1">import android.widget.EditText</span>
+<span class="s1">import androidx.fragment.app.Fragment</span>
+<span class="s1">import com.google.android.material.snackbar.Snackbar</span>
+<span class="s1">import java.text.SimpleDateFormat</span>
+<span class="s1">import dk.itu.moapd.scootersharing.fefa.databinding.FragmentStartRideBinding</span>
+
+
+<span class="s2">class </span><span class="s1">StartRideFragment : Fragment(){</span>
+
+    <span class="s0">// Set up binding variable</span>
+    <span class="s1">private lateinit </span><span class="s2">var </span><span class="s1">binding: FragmentStartRideBinding</span>
+
+    <span class="s0">// Set up variable for the Scooter</span>
+    <span class="s1">private lateinit </span><span class="s2">var </span><span class="s1">scooter : Scooter</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Initialize the binding and the content view</span>
+     <span class="s3">*/</span>
+    <span class="s1">override </span><span class="s2">fun </span><span class="s1">onCreateView(inflater: LayoutInflater</span><span class="s2">, </span><span class="s1">container: ViewGroup?</span><span class="s2">, </span><span class="s1">savedInstanceState: Bundle?): View {</span>
+        <span class="s1">binding = FragmentStartRideBinding.inflate(layoutInflater</span><span class="s2">, </span><span class="s1">container</span><span class="s2">, false</span><span class="s1">)</span>
+        <span class="s2">return </span><span class="s1">binding.root</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Function to initialize the data</span>
+     <span class="s3">*/</span>
+    <span class="s1">override </span><span class="s2">fun </span><span class="s1">onCreate(savedInstanceState : Bundle?){</span>
+        <span class="s2">super</span><span class="s1">.onCreate(savedInstanceState)</span>
+
+        <span class="s0">// Get the RidesDB instance using the requireContext() method of the fragment</span>
+        <span class="s1">ridesDB = RidesDB.get(</span><span class="s2">this</span><span class="s1">.requireContext())</span>
+
+        <span class="s0">// Get the list of scooters from the RidesDB</span>
+        <span class="s2">val </span><span class="s1">scooters = MainFragment.ridesDB.getRidesList()</span>
+
+        <span class="s0">// Create a new CustomAdapter and pass the list of scooters and the parentFragmentManager to it</span>
+        <span class="s1">adapter = CustomAdapter(scooters</span><span class="s2">, </span><span class="s1">parentFragmentManager)</span>
+    <span class="s1">}</span>
+
+    <span class="s1">override </span><span class="s2">fun </span><span class="s1">onViewCreated(view: View</span><span class="s2">, </span><span class="s1">savedInstanceState: Bundle?) {</span>
+        <span class="s2">super</span><span class="s1">.onViewCreated(view</span><span class="s2">, </span><span class="s1">savedInstanceState)</span>
+
+        <span class="s0">// Set up the onClickListeners for the buttons</span>
+        <span class="s1">binding.apply {</span>
+            <span class="s1">StartRideButton.setOnClickListener {</span>
+                <span class="s2">if </span><span class="s1">(EditTextName.text.isNotEmpty() &amp;&amp;</span>
+                    <span class="s1">EditLocationName.text.isNotEmpty()</span>
+                <span class="s1">) {</span>
+                    <span class="s0">// Create a new Scooter object using the data from the text fields</span>
+                    <span class="s1">scooter = Scooter(</span>
+                        <span class="s1">trimEditText(EditTextName)</span><span class="s2">,</span>
+                        <span class="s1">trimEditText(EditLocationName)</span><span class="s2">,</span>
+                        <span class="s1">System.currentTimeMillis()</span>
+                    <span class="s1">)</span>
+
+                    <span class="s0">// Add the new Scooter to the RidesDB</span>
+                    <span class="s1">ridesDB.addScooter(scooter)</span>
+
+                    <span class="s0">// Show a message using a snackbar</span>
+                    <span class="s1">showMessage()</span>
+
+                    <span class="s0">// Clear the text fields and reset the hints</span>
+                    <span class="s1">EditTextName.setText(</span><span class="s4">&quot;&quot;</span><span class="s1">)</span>
+                    <span class="s1">EditLocationName.setText(</span><span class="s4">&quot;&quot;</span><span class="s1">)</span>
+                    <span class="s1">EditTextName.hint = </span><span class="s4">&quot;Enter your name&quot;</span>
+                    <span class="s1">EditLocationName.hint = </span><span class="s4">&quot;Enter your location&quot;</span>
+
+                    <span class="s0">// Replace the current fragment with the MainFragment</span>
+                    <span class="s1">parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main</span><span class="s2">, </span><span class="s1">MainFragment()).commit()</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s1">BackButton.setOnClickListener {</span>
+                <span class="s0">// Replace the current fragment with the MainFragment</span>
+                <span class="s1">parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main</span><span class="s2">, </span><span class="s1">MainFragment()).commit()</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Function to convert textFields' content to a string</span>
+     <span class="s3">*/</span>
+    <span class="s1">private </span><span class="s2">fun </span><span class="s1">trimEditText(text: EditText): String {</span>
+        <span class="s2">return </span><span class="s1">text.text.toString().trim()</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Function to create and show snackBar to the UI</span>
+     <span class="s3">*/</span>
+    <span class="s1">private </span><span class="s2">fun </span><span class="s1">showMessage() {</span>
+        <span class="s2">val </span><span class="s1">sdf = SimpleDateFormat(</span><span class="s4">&quot;hh:mm:ss&quot;</span><span class="s1">)</span>
+        <span class="s2">val </span><span class="s1">currentDate = sdf.format(scooter.timeStamp)</span>
+        <span class="s1">Snackbar.make(</span>
+            <span class="s1">binding.root</span><span class="s2">,</span>
+            <span class="s4">&quot;Ride started using Scooter: Name: &quot; </span><span class="s1">+ scooter.name + </span><span class="s4">&quot;, Location: &quot; </span><span class="s1">+ scooter.location + </span><span class="s4">&quot;, Time: &quot; </span><span class="s1">+ currentDate + </span><span class="s4">&quot;.&quot;</span><span class="s2">,</span>
+            <span class="s5">5000</span>
+        <span class="s1">).show()</span>
+    <span class="s1">}</span>
+
+    <span class="s1">companion </span><span class="s2">object </span><span class="s1">{</span>
+        <span class="s1">lateinit </span><span class="s2">var </span><span class="s1">ridesDB: RidesDB</span>
+        <span class="s1">private lateinit </span><span class="s2">var </span><span class="s1">adapter: CustomAdapter</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>

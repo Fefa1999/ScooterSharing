@@ -1,0 +1,131 @@
+<html>
+<head>
+<title>RidesDB.kt</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #808080;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #cc7832;}
+.s3 { color: #629755; font-style: italic;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+RidesDB.kt</font>
+</center></td></tr></table>
+<pre><span class="s0">/* 
+*MIT License 
+* 
+*Copyright (c) [2023] [Felix Jeppe Fatum] 
+* 
+*Permission is hereby granted, free of charge, to any person obtaining a copy 
+*of this software and associated documentation files (the &quot;Software&quot;), to deal 
+*in the Software without restriction, including without limitation the rights 
+*to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+*copies of the Software, and to permit persons to whom the Software is 
+*furnished to do so, subject to the following conditions: 
+* 
+*The above copyright notice and this permission notice shall be included in all 
+*copies or substantial portions of the Software. 
+* 
+*THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+*IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+*FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+*AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+*LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+*SOFTWARE. 
+*/</span>
+
+<span class="s2">package </span><span class="s1">dk.itu.moapd.scootersharing.fefa</span>
+
+<span class="s1">import android.content.Context</span>
+<span class="s1">import kotlin.collections.ArrayList</span>
+<span class="s1">import kotlin.math.abs</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* Represents a database of rides.</span>
+ <span class="s3">* This class is a singleton and uses the lazy initialization pattern.</span>
+ <span class="s3">*/</span>
+<span class="s2">class </span><span class="s1">RidesDB private constructor(context: Context ){</span>
+
+    <span class="s0">// Private list of rides.</span>
+    <span class="s1">private </span><span class="s2">val </span><span class="s1">rides = ArrayList&lt;Scooter&gt;()</span>
+
+    <span class="s0">// Companion object used for lazy initialization of the singleton.</span>
+    <span class="s1">companion </span><span class="s2">object </span><span class="s1">: RidesDBHolder&lt;RidesDB</span><span class="s2">, </span><span class="s1">Context&gt;(::RidesDB)</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Returns a reversed list of rides.</span>
+     <span class="s3">*/</span>
+    <span class="s2">fun </span><span class="s1">getRidesList() : List&lt;Scooter&gt; {</span>
+        <span class="s2">return </span><span class="s1">rides.reversed()</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Adds a new scooter to the list of rides.</span>
+     <span class="s3">*/</span>
+    <span class="s2">fun </span><span class="s1">addScooter(scooter : Scooter) {</span>
+        <span class="s1">rides.add(scooter)</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Updates the location of the current scooter.</span>
+     <span class="s3">* The current scooter is assumed to be the last item in the list of rides.</span>
+     <span class="s3">*/</span>
+    <span class="s2">fun </span><span class="s1">updateCurrentScooter(location : String){</span>
+        <span class="s1">rides[rides.size-</span><span class="s4">1</span><span class="s1">].location = location</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Returns the current scooter.</span>
+     <span class="s3">* The current scooter is assumed to be the last item in the list of rides.</span>
+     <span class="s3">*/</span>
+    <span class="s2">fun </span><span class="s1">getCurrentScooter() : Scooter {</span>
+        <span class="s2">return </span><span class="s1">rides[rides.size-</span><span class="s4">1</span><span class="s1">]</span>
+    <span class="s1">}</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Deletes a scooter at the specified position in the list of rides.</span>
+     <span class="s3">*/</span>
+    <span class="s2">fun </span><span class="s1">deleteScooter(position: Int){</span>
+        <span class="s2">val </span><span class="s1">a = abs(position-(rides.size-</span><span class="s4">1</span><span class="s1">))</span>
+        <span class="s1">rides.removeAt(a)</span>
+    <span class="s1">}</span>
+<span class="s1">}</span>
+
+<span class="s3">/**</span>
+ <span class="s3">* A generic singleton holder class.</span>
+ <span class="s3">* This class is used for lazy initialization of singletons.</span>
+ <span class="s3">*/</span>
+<span class="s1">open </span><span class="s2">class </span><span class="s1">RidesDBHolder&lt;out T : Any</span><span class="s2">, in </span><span class="s1">A&gt;(creator: (A) -&gt; T) {</span>
+    <span class="s1">private </span><span class="s2">var </span><span class="s1">creator: ((A) -&gt; T)? = creator</span>
+    <span class="s1">@Volatile private </span><span class="s2">var </span><span class="s1">instance: T? = </span><span class="s2">null</span>
+
+    <span class="s3">/**</span>
+     <span class="s3">* Returns an instance of the singleton.</span>
+     <span class="s3">* If the instance is already created, it is returned.</span>
+     <span class="s3">* If not, a new instance is created using the creator function.</span>
+     <span class="s3">*/</span>
+    <span class="s2">fun </span><span class="s1">get(arg: A): T {</span>
+        <span class="s2">val </span><span class="s1">checkInstance = instance</span>
+        <span class="s2">if </span><span class="s1">(checkInstance != </span><span class="s2">null</span><span class="s1">)</span>
+            <span class="s2">return </span><span class="s1">checkInstance</span>
+        <span class="s2">return </span><span class="s1">synchronized(</span><span class="s2">this</span><span class="s1">) {</span>
+            <span class="s2">val </span><span class="s1">checkInstanceAgain = instance</span>
+            <span class="s2">if </span><span class="s1">(checkInstanceAgain != </span><span class="s2">null</span><span class="s1">)</span>
+                <span class="s1">checkInstanceAgain</span>
+            <span class="s2">else </span><span class="s1">{</span>
+                <span class="s2">val </span><span class="s1">created = creator!!(arg)</span>
+                <span class="s1">instance = created</span>
+                <span class="s1">creator = </span><span class="s2">null</span>
+                <span class="s1">created</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>
