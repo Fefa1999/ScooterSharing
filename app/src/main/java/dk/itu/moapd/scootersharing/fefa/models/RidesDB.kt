@@ -22,12 +22,11 @@
 *SOFTWARE.
 */
 
-package dk.itu.moapd.scootersharing.fefa
+package dk.itu.moapd.scootersharing.fefa.models
 
 import android.content.Context
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import dk.itu.moapd.scootersharing.fefa.models.Scooter
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
@@ -36,13 +35,8 @@ import kotlin.math.abs
  * This class is a singleton and uses the lazy initialization pattern.
  */
 class RidesDB private constructor(context: Context ){
-
-    // Private list of rides.
     private val rides = ArrayList<Scooter>()
-
-    // Companion object used for lazy initialization of the singleton.
     companion object : RidesDBHolder<RidesDB, Context>(::RidesDB)
-
     var database = Firebase.database("https://scooter-sharing-a1130-default-rtdb.europe-west1.firebasedatabase.app/").reference
 
     /**
@@ -57,31 +51,27 @@ class RidesDB private constructor(context: Context ){
      */
     fun addScooter(scooter : Scooter) {
         rides.add(scooter)
-        database.child("Scooters").child("scooter").push().setValue(scooter)
     }
 
     /**
      * Updates the location of the current scooter.
      * The current scooter is assumed to be the last item in the list of rides.
      */
-    fun updateCurrentScooter(location : String){
-        rides[rides.size-1].location = location
+    fun updateScooterInDatabase(id : String) {
+        database.child("Scooters").child(id.lowercase()).child("ScooterDetails").setValue(rides.find { it.id == id }!!)
     }
 
-    /**
-     * Returns the current scooter.
-     * The current scooter is assumed to be the last item in the list of rides.
-     */
-    fun getCurrentScooter() : Scooter {
-        return rides[rides.size-1]
+    fun containsScooter(id: String) : Boolean{
+        for (scooter in rides) {
+            if (scooter.id == id) {
+                return true
+            }
+        }
+        return false
     }
 
-    /**
-     * Deletes a scooter at the specified position in the list of rides.
-     */
-    fun deleteScooter(position: Int){
-        val a = abs(position-(rides.size-1))
-        rides.removeAt(a)
+    fun getScooter(id : String) : Scooter{
+        return rides.find { it.id == id }!!
     }
 }
 

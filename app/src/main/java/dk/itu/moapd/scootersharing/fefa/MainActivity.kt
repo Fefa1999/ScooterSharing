@@ -24,6 +24,8 @@
 
 package dk.itu.moapd.scootersharing.fefa
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dk.itu.moapd.scootersharing.fefa.databinding.ActivityMainBinding
@@ -31,12 +33,14 @@ import dk.itu.moapd.scootersharing.fefa.databinding.ActivityMainBinding
 /**
  * MainActivity is the entry point for the application and is responsible for creating the initial UI.
  */
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    override fun onCreate(savedInstanceState : Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView (binding.root)
+        setContentView(binding.root)
+        val intent = Intent(this, LocationService::class.java)
+        startService(intent)
     }
 }

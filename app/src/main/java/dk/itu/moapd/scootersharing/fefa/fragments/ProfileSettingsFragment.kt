@@ -1,16 +1,22 @@
 package dk.itu.moapd.scootersharing.fefa.fragments
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
+import android.widget.Toast
+import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.squareup.picasso.Picasso
 import dk.itu.moapd.scootersharing.fefa.R
-import dk.itu.moapd.scootersharing.fefa.RidesDB
+import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 import dk.itu.moapd.scootersharing.fefa.adapters.CustomAdapter
 import dk.itu.moapd.scootersharing.fefa.databinding.FragmentProfileSettingsBinding
 
@@ -39,7 +45,7 @@ class ProfileSettingsFragment : Fragment() {
         ridesDB = RidesDB.get(this.requireContext())
 
         // Get the list of scooters from the RidesDB
-        val scooters = MainFragment.ridesDB.getRidesList()
+        val scooters = ridesDB.getRidesList()
 
         // Create a new CustomAdapter and pass the list of scooters and the parentFragmentManager to it
         adapter = CustomAdapter(scooters, parentFragmentManager)
@@ -50,26 +56,50 @@ class ProfileSettingsFragment : Fragment() {
 
         // Set up the onClickListeners for the buttons
         binding.apply {
-            BackButton.setOnClickListener{
-                parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, MainFragment()).commit()
+            mapsButton.setOnClickListener {
+                if(context?.let {
+                        PermissionChecker.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION)
+                    } == PackageManager.PERMISSION_GRANTED){
+                    parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, MapFragment()).commit()
+                }else{
+                    Toast.makeText(context, "Please allow app to use location before you can access the map", Toast.LENGTH_SHORT).show()
+                }
             }
-            LogoutButton.setOnClickListener{
-                auth.signOut()
-                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(requireContext().getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build()
-                val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
-                googleSignInClient.signOut()
-                parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, LoginFragment()).commit()
+            ridesButton.setOnClickListener {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_main, ListRidesFragment()).commit()
             }
-            RideHistoryButton.setOnClickListener{
-                parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, ListRidesFragment()).commit()
+            homeButton.setOnClickListener {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_main, MainFragment()).commit()
+            }
+            LogoutButton.setOnClickListener {
+                val builder = AlertDialog.Builder(this.getRoot().context)
+                builder.setTitle("Log Out")
+                builder.setMessage("Are you sure you want to log out?")
+                builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                    auth.signOut()
+                    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestIdToken(requireContext().getString(R.string.default_web_client_id))
+                        .requestEmail()
+                        .build()
+                    val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+                    googleSignInClient.signOut()
+                    parentFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container_main, LoginFragment()).commit()
+                }
+                builder.setNegativeButton(android.R.string.no) { dialog, which -> }
+                builder.show()
+                true
+            }
+            PaymentButton.setOnClickListener{
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_main, PaymentFragment()).commit()
             }
             profileName.setText(auth.currentUser?.displayName.toString())
-            Picasso.with(context).load(auth.currentUser?.photoUrl).into(ProfileImage);
+            Picasso.with(context).load(auth.currentUser?.photoUrl).into(ProfileImage)
+            }
         }
-    }
 
     companion object {
         lateinit var ridesDB: RidesDB

@@ -1,0 +1,95 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Back button -->
+    <Button
+        android:id="@+id/btn_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/baseline_arrow_back_24" />
+
+    <!-- Card number input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_card_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Card Number">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_card_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Expiry date input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_expiry_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Expiry Date (MM/YY)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_expiry_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- CVV input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_cvv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="CVV">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_cvv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLines="1"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Name on card input -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/til_name_on_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Name on Card">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_name_on_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Payment button -->
+    <Button
+        android:id="@+id/btn_payment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add card"
+        android:textSize="16sp" />
+    <Button
+        android:id="@+id/btn_payment_remove"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remove card"
+        android:textSize="16sp" />
+
+</LinearLayout>

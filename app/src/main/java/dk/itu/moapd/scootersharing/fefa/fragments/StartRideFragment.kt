@@ -24,114 +24,137 @@
 
 package dk.itu.moapd.scootersharing.fefa.fragments
 
+import android.app.AlertDialog
+import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
+import dk.itu.moapd.scootersharing.fefa.LocationService
 import dk.itu.moapd.scootersharing.fefa.R
-import dk.itu.moapd.scootersharing.fefa.RidesDB
-import dk.itu.moapd.scootersharing.fefa.adapters.CustomAdapter
-import java.text.SimpleDateFormat
 import dk.itu.moapd.scootersharing.fefa.databinding.FragmentStartRideBinding
+import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 import dk.itu.moapd.scootersharing.fefa.models.Scooter
+import java.util.*
 
 
-class StartRideFragment : Fragment(){
+class StartRideFragment : Fragment() {
 
     // Set up binding variable
     private lateinit var binding: FragmentStartRideBinding
+    private lateinit var clockTextView: TextView
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var scooter: String
+    private lateinit var currentScooter: Scooter
+    private lateinit var auth: FirebaseAuth
+    private lateinit var RideId : String
 
-    // Set up variable for the Scooter
-    private lateinit var scooter : Scooter
+    var database = Firebase.database("https://scooter-sharing-a1130-default-rtdb.europe-west1.firebasedatabase.app/").reference
+    private var seconds = 0
+    private var minutes = 0
+    private var hours = 0
+    private var timeInMinutes = (hours*60)+(minutes)+(seconds/60)
+    private var amountToPay = (timeInMinutes*1.5)+10
 
     /**
      * Initialize the binding and the content view
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentStartRideBinding.inflate(layoutInflater, container, false)
-        return binding.root
-    }
-
-    /**
-     * Function to initialize the data
-     */
-    override fun onCreate(savedInstanceState : Bundle?){
-        super.onCreate(savedInstanceState)
-
-        // Get the RidesDB instance using the requireContext() method of the fragment
         ridesDB = RidesDB.get(this.requireContext())
+        scooter = arguments?.getString("scooterID")!!
+        currentScooter = ridesDB.getScooter(scooter)
+        auth = getFirebaseAuthInstance()
+        RideId = UUID.randomUUID().toString()
 
-        // Get the list of scooters from the RidesDB
-        val scooters = MainFragment.ridesDB.getRidesList()
 
-        // Create a new CustomAdapter and pass the list of scooters and the parentFragmentManager to it
-        adapter = CustomAdapter(scooters, parentFragmentManager)
+        handler.post(object : Runnable {
+            override fun run() {
+                updateTime()
+                handler.postDelayed(this, 1000)
+            }
+        })
+
+        binding.apply {
+            scooterName.text = currentScooter.id
+            scooterBattery.text = currentScooter.battery.toString()
+            scooterAddress.text = currentScooter.getAddressFromLatLng(requireContext())
+            stopButton.setOnClickListener{
+                val builder = AlertDialog.Builder(this.getRoot().context)
+                builder.setTitle("Pay")
+                builder.setMessage("Please confirm that you will end the ride, the price is: "+amountToPay+"DKK")
+                builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                    createRide()
+                    currentScooter.inUse = false
+                    currentScooter.lat = LocationService.getLat().toDouble()
+                    currentScooter.lon = LocationService.getLon().toDouble()
+                    ridesDB.updateScooterInDatabase(currentScooter.id)
+                    handler.removeCallbacksAndMessages(null)
+                    val fragment = CameraFragment()
+                    val bundle = Bundle()
+                    bundle.putString("scooterID",  scooter)
+                    fragment.arguments = bundle
+                    parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, fragment).commit()
+                }
+                builder.setNegativeButton(android.R.string.no) { dialog, which -> }
+                builder.show()
+                true
+            }
+        }
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        clockTextView = binding.clockTextview
+    }
 
-        // Set up the onClickListeners for the buttons
-        binding.apply {
-            StartRideButton.setOnClickListener {
-                if (EditTextName.text.isNotEmpty() &&
-                    EditLocationName.text.isNotEmpty()
-                ) {
-                    // Create a new Scooter object using the data from the text fields
-                    scooter = Scooter(
-                        trimEditText(EditTextName),
-                        trimEditText(EditLocationName),
-                        System.currentTimeMillis()
-                    )
-
-                    // Add the new Scooter to the RidesDB
-                    ridesDB.addScooter(scooter)
-
-                    // Show a message using a snackbar
-                    showMessage()
-
-                    // Clear the text fields and reset the hints
-                    EditTextName.setText("")
-                    EditLocationName.setText("")
-                    EditTextName.hint = "Enter your name"
-                    EditLocationName.hint = "Enter your location"
-
-                    // Replace the current fragment with the MainFragment
-                    parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, MainFragment()).commit()
-                }
+    private fun updateTime() {
+        seconds++
+        if (seconds == 60) {
+            seconds = 0
+            minutes++
+            if(minutes==30){
+                currentScooter.battery = currentScooter.battery - 1
             }
-            BackButton.setOnClickListener {
-                // Replace the current fragment with the MainFragment
-                parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, MainFragment()).commit()
+            if (minutes == 60) {
+                currentScooter.battery = currentScooter.battery - 1
+                minutes = 0
+                hours++
             }
         }
+        val timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        clockTextView.text = timeString
     }
 
-    /**
-     * Function to convert textFields' content to a string
-     */
-    private fun trimEditText(text: EditText): String {
-        return text.text.toString().trim()
+    private fun createRide(){
+        val ride = hashMapOf(
+            "RideId" to RideId,
+            "UserId" to auth.currentUser?.uid,
+            "ScooterId" to currentScooter.id,
+            "lengthInMinutes" to timeInMinutes,
+            "price" to amountToPay
+        )
+
+        database.child("Scooters").child(scooter.lowercase()).child("Rides").setValue(ride)
+        database.child("Users").child(auth.currentUser?.uid.toString()).child("Rides").setValue(ride)
     }
 
-    /**
-     * Function to create and show snackBar to the UI
-     */
-    private fun showMessage() {
-        val sdf = SimpleDateFormat("hh:mm:ss")
-        val currentDate = sdf.format(scooter.timeStamp)
-        Snackbar.make(
-            binding.root,
-            "Ride started using Scooter: Name: " + scooter.name + ", Location: " + scooter.location + ", Time: " + currentDate + ".",
-            5000
-        ).show()
+    private fun getFirebaseAuthInstance(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 
     companion object {
         lateinit var ridesDB: RidesDB
-        private lateinit var adapter: CustomAdapter
     }
 }
+

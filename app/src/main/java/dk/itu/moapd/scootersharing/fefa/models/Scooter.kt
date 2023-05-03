@@ -24,16 +24,30 @@
 
 package dk.itu.moapd.scootersharing.fefa.models
 
-import java.text.SimpleDateFormat
+import android.content.Context
+import android.location.Geocoder
 import java.util.*
 
 /**
  * Data class representing a Scooter
  */
-data class Scooter(val name : String, var location : String, var timeStamp : Long){
+data class Scooter(val id : String, var lat : Double, var lon : Double, var inUse: Boolean, var battery: Int){
     override fun toString(): String {
-        val date = Date(timeStamp)
-        val format = SimpleDateFormat("dd.MM.yyyy HH:mm")
-        return format.format(date)
+        return id
+    }
+    fun getAddressFromLatLng(context: Context): String {
+        if((lat>-90&&lat<90)&&(lon>-90&&lon<90)){
+        val geocoder = Geocoder(context, Locale.getDefault())
+        val addresses = geocoder.getFromLocation(lat, lon, 1)
+        if (!addresses.isNullOrEmpty()) {
+            val address = addresses[0]
+            val sb = StringBuilder()
+            for (i in 0..address.maxAddressLineIndex) {
+                sb.append(address.getAddressLine(i)).append("\n")
+            }
+            return sb.toString().trim()
+            }
+        }
+        return ""
     }
 }

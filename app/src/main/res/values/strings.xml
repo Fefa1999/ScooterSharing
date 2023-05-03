@@ -3,7 +3,7 @@
     <string name="name_text">Enter the scooter name</string>
     <string name="location">Enter your location</string>
     <string name="update">Update Ride</string>
-    <string name="start">Start Ride</string>
+    <string name="start">Unlock Scooter</string>
     <string name="AppName">Scooter Sharing</string>
     <string name="backButton">Back</string>
     <string name="contentDescription">Icon</string>
@@ -14,4 +14,8 @@
     <string name="Payment">Payment</string>
     <string name="LogOut">Log out</string>
     <string name="deleteRideAlert">Are you sure you want to delete this ride? Any data connected to it will be lost</string>
+    <string
+        name="google_maps_key"
+        templateMergeStrategy="preserve"
+        translatable="false">AIzaSyBl_mkYYPGPimkIPyD9pvsDlm5CZP5XYJk</string>
 </resources>

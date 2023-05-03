@@ -1,66 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <LinearLayout
-        android:id="@+id/root"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:foregroundTint="#673AB7"
-        android:gravity="center|top"
-        android:orientation="vertical">
-
-        <Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <Button
-                android:background="@drawable/baseline_settings_24"
-                android:id="@+id/Profile_Button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|left"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                app:cornerRadius="50dp" >
-            </Button>
-        </Toolbar>
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foregroundTint="#673AB7">
 
         <TextView
-            android:layout_marginTop="110dp"
-            android:id="@+id/editTextTextPersonName"
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="45dp"
+            android:layout_centerInParent="true"
+            android:text="Scooter Sharing"/>
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:ems="30"
-            android:text="@string/AppName"
-            android:textAlignment="center"
-            android:textColor="#000000"
-            android:textColorHint="#E91E63"
-            android:textSize="24sp" />
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottomAppBar"
+            tools:ignore="NotSibling">
 
-        <Button
-            android:drawableLeft="@drawable/baseline_play_arrow_24"
-            android:id="@+id/Start_Ride_Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center"
-            android:layout_marginTop="10dp"
-            android:text="@string/start"
-            android:textSize="12sp"
-            app:cornerRadius="50dp" >
-        </Button>
+                <com.google.android.material.bottomappbar.BottomAppBar
+                    android:id="@+id/bottomAppBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
+                    >
 
-            <Button
-            android:drawableLeft="@drawable/baseline_edit_24"
-            android:id="@+id/Update_Ride_Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center|center"
-            android:layout_marginTop="10dp"
-            android:text="@string/update"
-            android:textSize="12sp"
-            app:cornerRadius="50dp">
-            </Button>
-    </LinearLayout>
-</layout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                                <ImageButton
+                                    android:id="@+id/home_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="40dp"
+                                    android:background="@drawable/baseline_home_24"/>
+
+                                <Space
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"/>
+
+                                <ImageButton
+                                    android:id="@+id/maps_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/baseline_map_24"/>
+
+                                <Space
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"/>
+
+                                <ImageButton
+                                    android:id="@+id/rides_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/baseline_electric_scooter_24"/>
+
+                                <Space
+                                    android:layout_weight="1"
+                                    android:layout_height="wrap_content"
+                                    android:layout_width="wrap_content"/>
+
+                                <ImageButton
+                                    android:id="@+id/settings_button"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/baseline_settings_24"
+                                    android:layout_marginRight="50dp"/>
+
+                        </LinearLayout>
+                </com.google.android.material.bottomappbar.BottomAppBar>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

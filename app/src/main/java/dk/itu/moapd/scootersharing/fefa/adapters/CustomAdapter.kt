@@ -24,22 +24,28 @@
 
 package dk.itu.moapd.scootersharing.fefa.adapters
 import android.app.AlertDialog
+import android.content.Context
+import android.location.Geocoder
 import android.os.Build
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
+import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.RequiresApi
-import androidx.core.graphics.drawable.toDrawable
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import dk.itu.moapd.scootersharing.fefa.R
-import dk.itu.moapd.scootersharing.fefa.RidesDB
+import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 import dk.itu.moapd.scootersharing.fefa.fragments.ListRidesFragment
 import dk.itu.moapd.scootersharing.fefa.models.Scooter
+import java.util.*
 
 class CustomAdapter(private val dataSet: List<Scooter>, private val fragmentManager: FragmentManager) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
@@ -53,10 +59,10 @@ class CustomAdapter(private val dataSet: List<Scooter>, private val fragmentMana
      * @property timestamp the TextView displaying the Scooter's timestamp
      */
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        //val linLay: LinearLayout = view.findViewById(R.id.LinLay)
-        //val title: TextView = view.findViewById(R.id.title)
-        val location: TextView = view.findViewById(R.id.location)
-        val timestamp: TextView = view.findViewById(R.id.timestamp)
+        val img: ImageView = view.findViewById(R.id.image_view)
+        val title: TextView = view.findViewById(R.id.text_view_1)
+        val location: TextView = view.findViewById(R.id.text_view_2)
+        val inUse: TextView = view.findViewById(R.id.text_view_3)
     }
 
     /**
@@ -82,30 +88,23 @@ class CustomAdapter(private val dataSet: List<Scooter>, private val fragmentMana
      */
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.itemView.setOnClickListener {
-            val popupMenus = PopupMenu(viewHolder.itemView.context, viewHolder.itemView, Gravity.RIGHT)
-            popupMenus.inflate(R.menu.menu_list)
-            popupMenus.setOnMenuItemClickListener {
-                val builder = AlertDialog.Builder(viewHolder.itemView.context)
-                builder.setTitle("Delete Ride")
-                builder.setMessage("Are you sure you want to delete this ride? Any data connected to it will be lost")
-                builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-                    ridesDB.deleteScooter(position)
-                    fragmentManager.beginTransaction().replace(R.id.fragment_container_main, ListRidesFragment()).commit()
-                }
-                builder.setNegativeButton(android.R.string.no) { dialog, which -> }
-                builder.show()
-                true
-            }
-            popupMenus.setForceShowIcon(true)
-            popupMenus.show()
+        val storage = Firebase.storage("gs://scooter-sharing-a1130.appspot.com")
+        val imageRef = storage.getReferenceFromUrl("gs://scooter-sharing-a1130.appspot.com/"+dataSet[position].id)
+        imageRef.downloadUrl.addOnSuccessListener {
+            Glide.with(viewHolder.itemView.context)
+                .load(it)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .centerCrop()
+                .into(viewHolder.img)
         }
-       // if (position == 0) {
-            //viewHolder.linLay.background = R.drawable.border.toDrawable()
-        //}
-        viewHolder.location.text = dataSet[position].location
-        //viewHolder.title.text = dataSet[position].name
-        viewHolder.timestamp.text = dataSet[position].toString()
+
+        viewHolder.title.text = dataSet[position].id
+        if(dataSet[position].inUse){
+            viewHolder.inUse.text = "Currently Unavailable"
+        }else{
+            viewHolder.inUse.text = "Currently available"
+        }
+        viewHolder.location.text =  dataSet[position].getAddressFromLatLng(fragmentManager.fragments.get(0).requireContext())
     }
 
     /**
