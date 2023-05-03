@@ -23,16 +23,11 @@
 */
 
 package dk.itu.moapd.scootersharing.fefa.adapters
-import android.app.AlertDialog
-import android.content.Context
-import android.location.Geocoder
 import android.os.Build
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentManager
@@ -43,7 +38,6 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import dk.itu.moapd.scootersharing.fefa.R
 import dk.itu.moapd.scootersharing.fefa.models.RidesDB
-import dk.itu.moapd.scootersharing.fefa.fragments.ListRidesFragment
 import dk.itu.moapd.scootersharing.fefa.models.Scooter
 import java.util.*
 

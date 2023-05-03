@@ -11,6 +11,8 @@ import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.scootersharing.fefa.R
 import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 import dk.itu.moapd.scootersharing.fefa.adapters.CustomAdapter
@@ -55,6 +57,7 @@ class ListRidesFragment : Fragment() {
             settingsButton.setOnClickListener{
                 parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, ProfileSettingsFragment()).commit()
             }
+
             scooterList.adapter = adapter
             scooterList.layoutManager = LinearLayoutManager(this.root.context)
         }

@@ -1,7 +1,6 @@
 package dk.itu.moapd.scootersharing.fefa.fragments
 
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +13,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.scootersharing.fefa.R
-import dk.itu.moapd.scootersharing.fefa.adapters.CustomAdapter
 import dk.itu.moapd.scootersharing.fefa.databinding.FragmentPaymentBinding
-import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 
 class PaymentFragment : Fragment() {
     private lateinit var binding: FragmentPaymentBinding
@@ -51,6 +48,12 @@ class PaymentFragment : Fragment() {
             btnPayment.setOnClickListener{
                 if(etCvv.text.isNullOrEmpty()||etCardNumber.text.isNullOrEmpty()||etExpiryDate.text.isNullOrEmpty()||etNameOnCard.text.isNullOrEmpty()){
                     Toast.makeText(context, "Please fill out every field", Toast.LENGTH_SHORT).show()
+                }else if(etCvv.text.toString().contains(Regex("[a-zA-Z]+"))||etCvv.text.toString().length!=3){
+                    Toast.makeText(context, "Make sure cvv only contains 3 numbers", Toast.LENGTH_SHORT).show()
+                }else if(!etExpiryDate.text.toString().contains(Regex("[0-9/]+"))||etExpiryDate.text.toString().length!=5){
+                    Toast.makeText(context, "Make sure ExpiryDate is in the format 12/12", Toast.LENGTH_SHORT).show()
+                }else if(etCardNumber.text.toString().contains(Regex("[a-zA-Z]+"))||etCardNumber.text.toString().length!=16){
+                    Toast.makeText(context, "Make sure CardNumber is 16 numbers", Toast.LENGTH_SHORT).show()
                 }else{
                     val card = hashMapOf(
                         "cardNumber" to etCardNumber.text.toString(),
@@ -72,7 +75,7 @@ class PaymentFragment : Fragment() {
         }
     }
 
-    open fun getFirebaseAuthInstance(): FirebaseAuth {
+    private fun getFirebaseAuthInstance(): FirebaseAuth {
         return FirebaseAuth.getInstance()
     }
 

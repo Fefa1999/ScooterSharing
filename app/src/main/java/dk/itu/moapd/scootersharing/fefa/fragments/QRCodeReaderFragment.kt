@@ -17,9 +17,9 @@ import com.google.zxing.integration.android.IntentResult
 import dk.itu.moapd.scootersharing.fefa.fragments.*
 import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 
-
 class QRCodeReaderFragment : Fragment() {
     private lateinit var scooterID: String
+    private val handler = Handler(Looper.getMainLooper())
 
     companion object {
         lateinit var ridesDB: RidesDB

@@ -4,10 +4,10 @@ import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.content.PermissionChecker
 import androidx.fragment.app.Fragment
@@ -78,26 +78,42 @@ class ProfileSettingsFragment : Fragment() {
                 builder.setTitle("Log Out")
                 builder.setMessage("Are you sure you want to log out?")
                 builder.setPositiveButton(android.R.string.yes) { dialog, which ->
-                    auth.signOut()
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(requireContext().getString(R.string.default_web_client_id))
                         .requestEmail()
                         .build()
                     val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
                     googleSignInClient.signOut()
-                    parentFragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container_main, LoginFragment()).commit()
+                        .addOnCompleteListener(requireActivity()) { task ->
+                            if (task.isSuccessful) {
+                                // Handle successful sign-out
+                                Log.e("Logout", "Google Sign-Out succeeded", task.exception)
+                                parentFragmentManager.beginTransaction()
+                                    .replace(R.id.fragment_container_main, LoginFragment()).commit()
+                            } else {
+                                // Handle sign-out failure
+                                Log.e("Logout", "Google Sign-Out failed", task.exception)
+                            }
+                        }
+                    auth.signOut()
                 }
                 builder.setNegativeButton(android.R.string.no) { dialog, which -> }
                 builder.show()
                 true
             }
+
             PaymentButton.setOnClickListener{
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.fragment_container_main, PaymentFragment()).commit()
             }
             profileName.setText(auth.currentUser?.displayName.toString())
-            Picasso.with(context).load(auth.currentUser?.photoUrl).into(ProfileImage)
+            if(resources.configuration.orientation == 1){
+                Picasso.with(context).load(auth.currentUser?.photoUrl).into(ProfileImage)
+            }
+            Rides.setOnClickListener{
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_main, ListOldRidesFragment()).commit()
+            }
             }
         }
 

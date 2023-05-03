@@ -26,11 +26,8 @@ package dk.itu.moapd.scootersharing.fefa.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.ActivityManager
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +41,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import dk.itu.moapd.scootersharing.fefa.LocationService
 import dk.itu.moapd.scootersharing.fefa.R
 import dk.itu.moapd.scootersharing.fefa.adapters.CustomAdapter
 import dk.itu.moapd.scootersharing.fefa.databinding.FragmentMainBinding
@@ -73,6 +69,8 @@ open class MainFragment : Fragment() {
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
+        if (auth.currentUser == null) parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container_main, LoginFragment()).commit()
         return binding.root
     }
 
@@ -86,9 +84,6 @@ open class MainFragment : Fragment() {
             "name" to auth.currentUser?.displayName,
         ))
         super.onViewCreated(view, savedInstanceState)
-
-        if (auth.currentUser == null) parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_main, LoginFragment()).commit()
 
         requestUserPermissions()
         if(!areScootersAdded) {

@@ -25,7 +25,6 @@
 package dk.itu.moapd.scootersharing.fefa.fragments
 
 import android.app.AlertDialog
-import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -34,8 +33,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -144,9 +141,7 @@ class StartRideFragment : Fragment() {
             "lengthInMinutes" to timeInMinutes,
             "price" to amountToPay
         )
-
-        database.child("Scooters").child(scooter.lowercase()).child("Rides").setValue(ride)
-        database.child("Users").child(auth.currentUser?.uid.toString()).child("Rides").setValue(ride)
+        database.child("Rides").child(RideId).setValue(ride)
     }
 
     private fun getFirebaseAuthInstance(): FirebaseAuth {

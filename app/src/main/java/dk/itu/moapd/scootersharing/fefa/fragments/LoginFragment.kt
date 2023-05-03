@@ -6,17 +6,13 @@ import androidx.fragment.app.Fragment
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import dk.itu.moapd.scootersharing.fefa.R
-
 
 class LoginFragment : Fragment() {
     private val signInLauncher =
         registerForActivityResult(
             FirebaseAuthUIActivityResultContract()
         ) { result -> onSignInResult(result) }
-    var database = Firebase.database("https://scooter-sharing-a1130-default-rtdb.europe-west1.firebasedatabase.app/").reference
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         createSignInIntent()
@@ -31,6 +27,7 @@ class LoginFragment : Fragment() {
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
+            .setIsSmartLockEnabled(false) // Disable Smart Lock for Passwords
             .build()
         signInLauncher.launch(signInIntent)
     }
@@ -42,7 +39,7 @@ class LoginFragment : Fragment() {
             startMainFragment()
     }
 
-    fun startMainFragment() {
+    private fun startMainFragment() {
         parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, MainFragment()).commit()
     }
 }

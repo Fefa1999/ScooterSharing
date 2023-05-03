@@ -19,6 +19,7 @@
                 android:id="@+id/scooterList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
                 app:reverseLayout="false"
                 app:stackFromEnd="false">
             </androidx.recyclerview.widget.RecyclerView>

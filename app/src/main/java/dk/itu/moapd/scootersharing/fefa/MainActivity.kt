@@ -25,7 +25,6 @@
 package dk.itu.moapd.scootersharing.fefa
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import dk.itu.moapd.scootersharing.fefa.databinding.ActivityMainBinding
