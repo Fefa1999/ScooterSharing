@@ -72,15 +72,16 @@ class ListOldRidesFragment : Fragment() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Iterate over the children of the "scooters" node
                 for (dataSnapShot in dataSnapshot.children) {
-                    Log.e("test", "did we arrive here?")
-                    var ride = hashMapOf(
-                        "ScooterId" to dataSnapShot.child("ScooterId").value,
-                        "length" to dataSnapShot.child("lengthInMinutes").value,
-                        "price" to dataSnapShot.child("price").value,
-                    )
-                    if(!listOfHashmaps.contains(ride)){
-                        Log.e("test", "did we arrive here?")
-                        listOfHashmaps.add(ride)
+                    if(dataSnapShot.child("UserId").value==auth.currentUser?.uid) {
+                        var ride = hashMapOf(
+                            "rideID" to dataSnapShot.child("rideId").value,
+                            "ScooterId" to dataSnapShot.child("ScooterId").value,
+                            "length" to dataSnapShot.child("lengthInMinutes").value,
+                            "price" to dataSnapShot.child("price").value,
+                        )
+                        if (!listOfHashmaps.contains(ride)) {
+                            listOfHashmaps.add(ride)
+                        }
                     }
                 }
             }
