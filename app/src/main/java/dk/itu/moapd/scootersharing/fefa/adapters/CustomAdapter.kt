@@ -83,7 +83,7 @@ class CustomAdapter(private val dataSet: List<Scooter>, private val fragmentMana
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val storage = Firebase.storage("gs://scooter-sharing-a1130.appspot.com")
-        val imageRef = storage.getReferenceFromUrl("gs://scooter-sharing-a1130.appspot.com/"+dataSet[position].id)
+        val imageRef = storage.getReferenceFromUrl("gs://scooter-sharing-a1130.appspot.com/"+dataSet[position].id+".jpeg")
         imageRef.downloadUrl.addOnSuccessListener {
             Glide.with(viewHolder.itemView.context)
                 .load(it)

@@ -44,6 +44,7 @@ import dk.itu.moapd.scootersharing.fefa.models.Scooter
 import java.util.*
 
 
+@Suppress("DEPRECATION")
 class StartRideFragment : Fragment() {
 
     // Set up binding variable
@@ -89,7 +90,7 @@ class StartRideFragment : Fragment() {
                 val builder = AlertDialog.Builder(this.getRoot().context)
                 builder.setTitle("Pay")
                 builder.setMessage("Please confirm that you will end the ride, the price is: "+amountToPay+"DKK")
-                builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                builder.setPositiveButton(android.R.string.yes) { _, _ ->
                     createRide()
                     currentScooter.inUse = false
                     currentScooter.lat = LocationService.getLat().toDouble()
@@ -102,9 +103,8 @@ class StartRideFragment : Fragment() {
                     fragment.arguments = bundle
                     parentFragmentManager.beginTransaction().replace(R.id.fragment_container_main, fragment).commit()
                 }
-                builder.setNegativeButton(android.R.string.no) { dialog, which -> }
+                builder.setNegativeButton(android.R.string.no) { _, _ -> }
                 builder.show()
-                true
             }
         }
         return binding.root

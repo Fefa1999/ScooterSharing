@@ -1,3 +1,27 @@
+/*
+*MIT License
+*
+*Copyright (c) [2023] [Felix Jeppe Fatum]
+*
+*Permission is hereby granted, free of charge, to any person obtaining a copy
+*of this software and associated documentation files (the "Software"), to deal
+*in the Software without restriction, including without limitation the rights
+*to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*copies of the Software, and to permit persons to whom the Software is
+*furnished to do so, subject to the following conditions:
+*
+*The above copyright notice and this permission notice shall be included in all
+*copies or substantial portions of the Software.
+*
+*THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*SOFTWARE.
+*/
+
 package dk.itu.moapd.scootersharing.fefa.fragments
 
 import android.Manifest
@@ -21,6 +45,7 @@ import dk.itu.moapd.scootersharing.fefa.adapters.CustomAdapter
 import dk.itu.moapd.scootersharing.fefa.databinding.FragmentProfileSettingsBinding
 
 
+@Suppress("DEPRECATION")
 class ProfileSettingsFragment : Fragment() {
     // Set up binding variable
     private lateinit var binding: FragmentProfileSettingsBinding
@@ -77,7 +102,7 @@ class ProfileSettingsFragment : Fragment() {
                 val builder = AlertDialog.Builder(this.getRoot().context)
                 builder.setTitle("Log Out")
                 builder.setMessage("Are you sure you want to log out?")
-                builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+                builder.setPositiveButton(android.R.string.yes) { _, _ ->
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(requireContext().getString(R.string.default_web_client_id))
                         .requestEmail()
@@ -97,9 +122,8 @@ class ProfileSettingsFragment : Fragment() {
                         }
                     auth.signOut()
                 }
-                builder.setNegativeButton(android.R.string.no) { dialog, which -> }
+                builder.setNegativeButton(android.R.string.no) { _, _ -> }
                 builder.show()
-                true
             }
 
             PaymentButton.setOnClickListener{

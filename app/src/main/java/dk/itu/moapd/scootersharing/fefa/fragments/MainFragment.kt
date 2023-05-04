@@ -47,6 +47,7 @@ import dk.itu.moapd.scootersharing.fefa.databinding.FragmentMainBinding
 import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 import dk.itu.moapd.scootersharing.fefa.models.Scooter
 
+@Suppress("DEPRECATION")
 open class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var auth: FirebaseAuth
@@ -150,7 +151,6 @@ open class MainFragment : Fragment() {
             }
         })
     }
-
     companion object {
         lateinit var ridesDB: RidesDB
         private lateinit var adapter: CustomAdapter

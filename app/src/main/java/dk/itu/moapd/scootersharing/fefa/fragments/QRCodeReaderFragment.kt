@@ -1,6 +1,30 @@
-import android.Manifest
+/*
+*MIT License
+*
+*Copyright (c) [2023] [Felix Jeppe Fatum]
+*
+*Permission is hereby granted, free of charge, to any person obtaining a copy
+*of this software and associated documentation files (the "Software"), to deal
+*in the Software without restriction, including without limitation the rights
+*to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+*copies of the Software, and to permit persons to whom the Software is
+*furnished to do so, subject to the following conditions:
+*
+*The above copyright notice and this permission notice shall be included in all
+*copies or substantial portions of the Software.
+*
+*THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+*IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+*FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+*AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+*LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+*OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+*SOFTWARE.
+*/
+package dk.itu.moapd.scootersharing.fefa.fragments
+
+import android.app.Activity.RESULT_CANCELED
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,8 +32,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import dk.itu.moapd.scootersharing.fefa.R
 import androidx.fragment.app.Fragment
 import com.google.zxing.integration.android.IntentIntegrator
@@ -17,13 +39,12 @@ import com.google.zxing.integration.android.IntentResult
 import dk.itu.moapd.scootersharing.fefa.fragments.*
 import dk.itu.moapd.scootersharing.fefa.models.RidesDB
 
+@Suppress("DEPRECATION")
 class QRCodeReaderFragment : Fragment() {
     private lateinit var scooterID: String
-    private val handler = Handler(Looper.getMainLooper())
 
     companion object {
         lateinit var ridesDB: RidesDB
-        private const val REQUEST_CAMERA_PERMISSION = 1
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,14 +55,7 @@ class QRCodeReaderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(),
-                    arrayOf(Manifest.permission.CAMERA),
-                    REQUEST_CAMERA_PERMISSION)
-            } else {
                 startScanner()
-            }
         }
 
     private fun startScanner() {
@@ -49,24 +63,21 @@ class QRCodeReaderFragment : Fragment() {
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
         integrator.setPrompt("Scan a QR code")
         integrator.setBeepEnabled(false)
+        integrator.setTimeout(20000)
         integrator.initiateScan()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_CAMERA_PERMISSION -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startScanner()
-                } else {
-                    Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show()
-                }
-                return
-            }
-        }
-    }
-
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if(resultCode == RESULT_CANCELED){
+            Toast.makeText(context, "Not scanned in time, try again", Toast.LENGTH_SHORT).show()
+            Handler(Looper.getMainLooper()).postDelayed({
+                val fragment = MapFragment()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container_main, fragment).commit()
+            }, 3000)
+        }
         val result: IntentResult? = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
         if (result != null && result.contents != null) {
             val scannedText = result.contents

@@ -31,6 +31,7 @@ import java.util.*
 /**
  * Data class representing a Scooter
  */
+@Suppress("DEPRECATION")
 data class Scooter(val id : String, var lat : Double, var lon : Double, var inUse: Boolean, var battery: Int){
     override fun toString(): String {
         return id
